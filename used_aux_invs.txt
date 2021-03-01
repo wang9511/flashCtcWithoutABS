@@ -1,0 +1,104 @@
+-- Auxiliary invariants used by Store:
+Sta.Proc[NODE_1].CacheState = CACHE_E -> Sta.Dir.ShrSet[NODE_2] = false
+Sta.Proc[NODE_1].CacheState = CACHE_E -> Sta.Dir.Dirty = true
+Sta.Proc[NODE_1].CacheState = CACHE_E -> Sta.Proc[NODE_2].CacheState != CACHE_E
+Sta.Proc[NODE_1].CacheState = CACHE_E -> Sta.Dir.Local = false
+Sta.Proc[NODE_1].CacheState = CACHE_E -> Sta.UniMsg[NODE_2].Cmd != UNI_PutX
+
+-- Auxiliary invariants used by PI_Remote_Get:
+Sta.Proc[NODE_1].ProcCmd = NODE_None -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+Sta.Proc[NODE_1].CacheState = CACHE_I -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+
+-- Auxiliary invariants used by PI_Remote_GetX:
+Sta.Proc[NODE_1].ProcCmd = NODE_None -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+Sta.Proc[NODE_1].CacheState = CACHE_I -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+
+-- Auxiliary invariants used by PI_Remote_PutX:
+Sta.Proc[NODE_1].CacheState = CACHE_E -> Sta.Dir.ShrSet[NODE_2] = false
+Sta.Proc[NODE_1].CacheState = CACHE_E -> Sta.Dir.Dirty = true
+Sta.Proc[NODE_1].CacheState = CACHE_E -> Sta.Proc[NODE_2].CacheState != CACHE_E
+Sta.Proc[NODE_1].CacheState = CACHE_E -> Sta.Dir.Local = false
+Sta.Proc[NODE_1].ProcCmd = NODE_None -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+Sta.Proc[NODE_1].CacheState = CACHE_E -> Sta.UniMsg[NODE_2].Cmd != UNI_PutX
+
+-- Auxiliary invariants used by PI_Remote_Replace:
+Sta.Proc[NODE_1].ProcCmd = NODE_None -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+
+-- Auxiliary invariants used by NI_Local_Get_Nak:
+Sta.RpMsg[NODE_1].Cmd != RP_Replace -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+Sta.UniMsg[NODE_1].Cmd = UNI_Get -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+
+-- Auxiliary invariants used by NI_Local_Get_Get:
+Sta.RpMsg[NODE_1].Cmd != RP_Replace -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+Sta.UniMsg[NODE_1].Cmd = UNI_Get -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+
+-- Auxiliary invariants used by NI_Local_Get_Put:
+Sta.RpMsg[NODE_1].Cmd != RP_Replace -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+Sta.UniMsg[NODE_1].Cmd = UNI_Get -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+
+-- Auxiliary invariants used by NI_Remote_Get_Nak:
+Sta.UniMsg[NODE_1].Cmd = UNI_Get -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+Sta.Proc[NODE_2].CacheState != CACHE_E -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+
+-- Auxiliary invariants used by NI_Remote_Get_Nak_Home:
+Sta.Proc[NODE_2].CacheState != CACHE_E -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+
+-- Auxiliary invariants used by NI_Remote_Get_Put:
+Sta.Proc[NODE_2].CacheState = CACHE_E -> Sta.Dir.ShrVld = false
+Sta.Proc[NODE_2].CacheState = CACHE_E -> Sta.Dir.HeadVld = true
+Sta.Proc[NODE_2].CacheState = CACHE_E -> Sta.WbMsg.Cmd != WB_Wb
+Sta.Proc[NODE_2].CacheState = CACHE_E -> Sta.ShWbMsg.Proc != NODE_1
+Sta.UniMsg[NODE_1].Cmd = UNI_Get -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+Sta.Proc[NODE_2].CacheState = CACHE_E -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+
+-- Auxiliary invariants used by NI_Remote_Get_Put_Home:
+Sta.Proc[NODE_2].CacheState = CACHE_E -> Sta.Dir.ShrVld = false
+Sta.Proc[NODE_2].CacheState = CACHE_E -> Sta.Dir.HeadVld = true
+Sta.Proc[NODE_2].CacheState = CACHE_E -> Sta.WbMsg.Cmd != WB_Wb
+Sta.Proc[NODE_2].CacheState = CACHE_E -> Sta.ShWbMsg.Proc != NODE_1
+Sta.Proc[NODE_2].CacheState = CACHE_E -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+
+-- Auxiliary invariants used by NI_Local_GetX_Nak:
+Sta.UniMsg[NODE_1].Cmd = UNI_GetX -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+
+-- Auxiliary invariants used by NI_Local_GetX_GetX:
+Sta.UniMsg[NODE_1].Cmd = UNI_GetX -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+
+-- Auxiliary invariants used by NI_Local_GetX_PutX:
+Sta.UniMsg[NODE_1].Cmd = UNI_GetX -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+
+-- Auxiliary invariants used by NI_Remote_GetX_Nak:
+Sta.UniMsg[NODE_1].Cmd = UNI_GetX -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+Sta.Proc[NODE_2].CacheState != CACHE_E -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+
+-- Auxiliary invariants used by NI_Remote_GetX_Nak_Home:
+Sta.Proc[NODE_2].CacheState != CACHE_E -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+
+-- Auxiliary invariants used by NI_Remote_GetX_PutX:
+Sta.Proc[NODE_2].CacheState = CACHE_E -> Sta.Dir.ShrVld = false
+Sta.Proc[NODE_2].CacheState = CACHE_E -> Sta.Dir.HeadVld = true
+Sta.Proc[NODE_2].CacheState = CACHE_E -> Sta.WbMsg.Cmd != WB_Wb
+Sta.Proc[NODE_2].CacheState = CACHE_E -> Sta.ShWbMsg.Proc != NODE_1
+Sta.UniMsg[NODE_1].Cmd = UNI_GetX -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+Sta.Proc[NODE_2].CacheState = CACHE_E -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+
+-- Auxiliary invariants used by NI_Remote_GetX_PutX_Home:
+Sta.Proc[NODE_2].CacheState = CACHE_E -> Sta.Dir.ShrVld = false
+Sta.Proc[NODE_2].CacheState = CACHE_E -> Sta.Dir.HeadVld = true
+Sta.Proc[NODE_2].CacheState = CACHE_E -> Sta.WbMsg.Cmd != WB_Wb
+Sta.Proc[NODE_2].CacheState = CACHE_E -> Sta.ShWbMsg.Proc != NODE_1
+Sta.Proc[NODE_2].CacheState = CACHE_E -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+
+-- Auxiliary invariants used by NI_Remote_PutX:
+Sta.UniMsg[NODE_1].Cmd = UNI_PutX -> Sta.Dir.HeadVld = true
+Sta.UniMsg[NODE_1].Cmd = UNI_PutX -> Sta.ShWbMsg.Proc != NODE_2
+Sta.Proc[NODE_1].ProcCmd = NODE_GetX -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+Sta.UniMsg[NODE_1].Cmd = UNI_PutX -> Sta.ShWbMsg.Cmd != SHWB_ShWb
+Sta.UniMsg[NODE_1].Cmd = UNI_PutX -> Sta.UniMsg[NODE_2].Cmd != UNI_PutX
+Sta.UniMsg[NODE_1].Cmd = UNI_PutX -> Sta.Dir.ShrSet[NODE_2] = false
+Sta.UniMsg[NODE_1].Cmd = UNI_PutX -> Sta.Dir.Dirty = true
+Sta.UniMsg[NODE_1].Cmd = UNI_PutX -> Sta.WbMsg.Cmd != WB_Wb
+Sta.UniMsg[NODE_1].Cmd = UNI_PutX -> Sta.Dir.Local = false
+Sta.UniMsg[NODE_1].Cmd = UNI_PutX -> Sta.Dir.ShrVld = false
+Sta.UniMsg[NODE_1].Cmd = UNI_PutX -> Sta.Proc[NODE_2].CacheState != CACHE_E
+

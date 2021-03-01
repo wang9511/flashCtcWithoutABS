@@ -1,0 +1,40 @@
+Sta.HomeProc.CacheState = CACHE_E)
+Sta.UniMsg[NODE].Cmd = UNI_PutX
+Sta.UniMsg[NODE].Cmd = UNI_Put
+Sta.Proc[NODE].CacheState = CACHE_E
+(Sta.Dir.Dirty -> Sta.Dir.Local
+Sta.Proc[NODE].CacheState != CACHE_E
+Sta.HomeUniMsg.Cmd = UNI_GetX
+NODE != NODE
+Sta.Dir.HeadPtr = NODE )
+Sta.Proc[NODE].CacheState = CACHE_I
+Sta.Proc[NODE].ProcCmd = NODE_GetX
+Sta.Proc[NODE].CacheState = CACHE_S
+Sta.Dir.Local
+Sta.HomeUniMsg.Cmd = UNI_Nak
+( Sta.Dir.Pending |
+    Sta.Dir.Dirty
+Sta.HomeUniMsg.Proc = NODE
+Sta.Dir.Dirty
+Sta.UniMsg[NODE].Cmd = UNI_GetX
+Sta.UniMsg[NODE].HomeProc = true
+!Sta.Dir.Pending
+Sta.Dir.HeadPtr != NODE
+Sta.Proc[NODE].ProcCmd = NODE_None
+!Sta.Dir.Local
+Sta.Dir.Pending
+Sta.InvMsg[NODE].Cmd = INV_Inv
+Sta.RpMsg[NODE].Cmd != RP_Replace
+Sta.HomeUniMsg.Cmd = UNI_Get
+Sta.HomeProc.CacheState != CACHE_E |
+    Sta.Dir.Dirty
+Sta.HomeProc.CacheState = CACHE_I
+Sta.InvMsg[NODE].Cmd = INV_InvAck
+Sta.HomeProc.CacheState = CACHE_E
+Sta.Dir.InvSet[NODE]
+Sta.HomeRpMsg.Cmd = RP_Replace
+Sta.UniMsg[NODE].Cmd = UNI_Get
+Sta.HomeProc.ProcCmd = NODE_None
+Sta.UniMsg[NODE].Cmd = UNI_Nak
+Sta.UniMsg[NODE].Proc = NODE
+Sta.RpMsg[NODE].Cmd = RP_Replace
