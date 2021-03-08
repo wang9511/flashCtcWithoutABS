@@ -1068,12 +1068,10 @@ endruleset;
 
 ruleset DATA_1 : DATA do
 rule "n_ABS_Store_NODE_1"
-Sta.Dir.Local = false &
-		Sta.Dir.Dirty = true&
+Sta.Dir.HeadVld = true &
+		Sta.ShWbMsg.Cmd != SHWB_ShWb&
 	forall NODE_2 : NODE do
-		Sta.Dir.ShrSet[NODE_2] = false &
-		Sta.Proc[NODE_2].CacheState != CACHE_E &
-		Sta.UniMsg[NODE_2].Cmd != UNI_PutX
+		Sta.ShWbMsg.Proc != NODE_2
 	end
 ==>
  var NxtSta : STATE; 
@@ -1149,13 +1147,10 @@ begin
 	Sta := NxtSta;
 endrule;
 rule "n_ABS_PI_Remote_PutX_NODE_1"
-Sta.Dir.Local = false &
-		Sta.ShWbMsg.Cmd != SHWB_ShWb &
-		Sta.Dir.Dirty = true&
+Sta.Dir.HeadVld = true &
+		Sta.ShWbMsg.Cmd != SHWB_ShWb&
 	forall NODE_2 : NODE do
-		Sta.Dir.ShrSet[NODE_2] = false &
-		Sta.Proc[NODE_2].CacheState != CACHE_E &
-		Sta.UniMsg[NODE_2].Cmd != UNI_PutX
+		Sta.ShWbMsg.Proc != NODE_2
 	end
 ==>
  var NxtSta : STATE; 
@@ -1374,13 +1369,11 @@ ruleset NODE_2 : NODE do
 rule "n_ABS_NI_Remote_Get_Put_NODE_1"
 
 	Sta.Proc[NODE_2].CacheState = CACHE_E
- 	& Sta.ShWbMsg.Cmd != SHWB_ShWb &
-		Sta.Dir.HeadVld = true &
-		Sta.Dir.ShrVld = false &
-		Sta.WbMsg.Cmd != WB_Wb&
-	forall NODE_1 : NODE do
-		Sta.ShWbMsg.Proc != NODE_1
-	end
+ 	& Sta.Dir.Dirty = true &
+		Sta.ShWbMsg.Cmd != SHWB_ShWb &
+		Sta.WbMsg.Cmd != WB_Wb &
+		Sta.Dir.Local = false &
+		Sta.Dir.ShrVld = false
 ==>
  var NxtSta : STATE; 
 begin
@@ -1399,10 +1392,13 @@ rule "n_ABS_NI_Remote_Get_Put_NODE_2"
 
 	Sta.UniMsg[NODE_1].Cmd = UNI_Get &
 	Sta.UniMsg[NODE_1].Proc = Other
- 	& Sta.ShWbMsg.Cmd != SHWB_ShWb &
-		Sta.Dir.HeadVld = true &
-		Sta.Dir.ShrVld = false &
-		Sta.WbMsg.Cmd != WB_Wb&Sta.ShWbMsg.Proc != NODE_1
+ 	& Sta.Dir.Dirty = true &
+		Sta.ShWbMsg.Cmd != SHWB_ShWb &
+		Sta.WbMsg.Cmd != WB_Wb &
+		Sta.Dir.Local = false &
+		Sta.Dir.ShrVld = false&Sta.UniMsg[NODE_1].Cmd != UNI_PutX &
+		Sta.Dir.ShrSet[NODE_1] = false &
+		Sta.Proc[NODE_1].CacheState != CACHE_E
 ==>
  var NxtSta : STATE; 
 begin
@@ -1419,12 +1415,15 @@ endruleset;
 rule "n_ABS_NI_Remote_Get_Put_NODE_1_NODE_2"
 
 	Other != Other
- 	& Sta.ShWbMsg.Cmd != SHWB_ShWb &
-		Sta.Dir.HeadVld = true &
-		Sta.Dir.ShrVld = false &
-		Sta.WbMsg.Cmd != WB_Wb&
+ 	& Sta.Dir.Dirty = true &
+		Sta.ShWbMsg.Cmd != SHWB_ShWb &
+		Sta.WbMsg.Cmd != WB_Wb &
+		Sta.Dir.Local = false &
+		Sta.Dir.ShrVld = false&
 	forall NODE_1 : NODE do
-		Sta.ShWbMsg.Proc != NODE_1
+		Sta.UniMsg[NODE_1].Cmd != UNI_PutX &
+		Sta.Dir.ShrSet[NODE_1] = false &
+		Sta.Proc[NODE_1].CacheState != CACHE_E
 	end
 ==>
  var NxtSta : STATE; 
@@ -1441,13 +1440,10 @@ rule "n_ABS_NI_Remote_Get_Put_Home_NODE_1"
 	Sta.HomeUniMsg.Cmd = UNI_Get &
 	Sta.HomeUniMsg.Proc = NODE_2 &
 	Sta.Proc[NODE_2].CacheState = CACHE_E
- 	& Sta.ShWbMsg.Cmd != SHWB_ShWb &
-		Sta.Dir.HeadVld = true &
+ 	& Sta.Dir.Dirty = true &
+		Sta.WbMsg.Cmd != WB_Wb &
 		Sta.Dir.ShrVld = false &
-		Sta.WbMsg.Cmd != WB_Wb&
-	forall NODE_1 : NODE do
-		Sta.ShWbMsg.Proc != NODE_1
-	end
+		Sta.Dir.Local = false
 ==>
  var NxtSta : STATE; 
 begin
@@ -1469,10 +1465,12 @@ rule "n_ABS_NI_Remote_Get_Put_Home_NODE_2"
 
 	Sta.HomeUniMsg.Cmd = UNI_Get &
 	Sta.HomeUniMsg.Proc = Other
- 	& Sta.ShWbMsg.Cmd != SHWB_ShWb &
-		Sta.Dir.HeadVld = true &
-		Sta.Dir.ShrVld = false &
-		Sta.WbMsg.Cmd != WB_Wb&Sta.ShWbMsg.Proc != NODE_1
+ 	& Sta.Dir.Dirty = true &
+		Sta.WbMsg.Cmd != WB_Wb &
+		Sta.Dir.Local = false &
+		Sta.Dir.ShrVld = false&Sta.UniMsg[NODE_1].Cmd != UNI_PutX &
+		Sta.Dir.ShrSet[NODE_1] = false &
+		Sta.Proc[NODE_1].CacheState != CACHE_E
 ==>
  var NxtSta : STATE; 
 begin
@@ -1491,12 +1489,14 @@ rule "n_ABS_NI_Remote_Get_Put_Home_NODE_1_NODE_2"
 	Other != Other &
 	Sta.HomeUniMsg.Cmd = UNI_Get &
 	Sta.HomeUniMsg.Proc = Other
- 	& Sta.ShWbMsg.Cmd != SHWB_ShWb &
-		Sta.Dir.HeadVld = true &
-		Sta.Dir.ShrVld = false &
-		Sta.WbMsg.Cmd != WB_Wb&
+ 	& Sta.Dir.Dirty = true &
+		Sta.WbMsg.Cmd != WB_Wb &
+		Sta.Dir.Local = false &
+		Sta.Dir.ShrVld = false&
 	forall NODE_1 : NODE do
-		Sta.ShWbMsg.Proc != NODE_1
+		Sta.UniMsg[NODE_1].Cmd != UNI_PutX &
+		Sta.Dir.ShrSet[NODE_1] = false &
+		Sta.Proc[NODE_1].CacheState != CACHE_E
 	end
 ==>
  var NxtSta : STATE; 
@@ -1744,13 +1744,11 @@ ruleset NODE_2 : NODE do
 rule "n_ABS_NI_Remote_GetX_PutX_NODE_1"
 
 	Sta.Proc[NODE_2].CacheState = CACHE_E
- 	& Sta.ShWbMsg.Cmd != SHWB_ShWb &
-		Sta.Dir.HeadVld = true &
-		Sta.Dir.ShrVld = false &
-		Sta.WbMsg.Cmd != WB_Wb&
-	forall NODE_1 : NODE do
-		Sta.ShWbMsg.Proc != NODE_1
-	end
+ 	& Sta.Dir.Dirty = true &
+		Sta.ShWbMsg.Cmd != SHWB_ShWb &
+		Sta.WbMsg.Cmd != WB_Wb &
+		Sta.Dir.Local = false &
+		Sta.Dir.ShrVld = false
 ==>
  var NxtSta : STATE; 
 begin
@@ -1771,10 +1769,13 @@ rule "n_ABS_NI_Remote_GetX_PutX_NODE_2"
 
 	Sta.UniMsg[NODE_1].Cmd = UNI_GetX &
 	Sta.UniMsg[NODE_1].Proc = Other
- 	& Sta.ShWbMsg.Cmd != SHWB_ShWb &
-		Sta.Dir.HeadVld = true &
-		Sta.Dir.ShrVld = false &
-		Sta.WbMsg.Cmd != WB_Wb&Sta.ShWbMsg.Proc != NODE_1
+ 	& Sta.Dir.Dirty = true &
+		Sta.ShWbMsg.Cmd != SHWB_ShWb &
+		Sta.WbMsg.Cmd != WB_Wb &
+		Sta.Dir.Local = false &
+		Sta.Dir.ShrVld = false&Sta.UniMsg[NODE_1].Cmd != UNI_PutX &
+		Sta.Dir.ShrSet[NODE_1] = false &
+		Sta.Proc[NODE_1].CacheState != CACHE_E
 ==>
  var NxtSta : STATE; 
 begin
@@ -1793,12 +1794,15 @@ endruleset;
 rule "n_ABS_NI_Remote_GetX_PutX_NODE_1_NODE_2"
 
 	Other != Other
- 	& Sta.ShWbMsg.Cmd != SHWB_ShWb &
-		Sta.Dir.HeadVld = true &
-		Sta.Dir.ShrVld = false &
-		Sta.WbMsg.Cmd != WB_Wb&
+ 	& Sta.Dir.Dirty = true &
+		Sta.ShWbMsg.Cmd != SHWB_ShWb &
+		Sta.WbMsg.Cmd != WB_Wb &
+		Sta.Dir.Local = false &
+		Sta.Dir.ShrVld = false&
 	forall NODE_1 : NODE do
-		Sta.ShWbMsg.Proc != NODE_1
+		Sta.UniMsg[NODE_1].Cmd != UNI_PutX &
+		Sta.Dir.ShrSet[NODE_1] = false &
+		Sta.Proc[NODE_1].CacheState != CACHE_E
 	end
 ==>
  var NxtSta : STATE; 
@@ -1817,13 +1821,10 @@ rule "n_ABS_NI_Remote_GetX_PutX_Home_NODE_1"
 	Sta.HomeUniMsg.Cmd = UNI_GetX &
 	Sta.HomeUniMsg.Proc = NODE_2 &
 	Sta.Proc[NODE_2].CacheState = CACHE_E
- 	& Sta.ShWbMsg.Cmd != SHWB_ShWb &
-		Sta.Dir.HeadVld = true &
+ 	& Sta.Dir.Dirty = true &
+		Sta.WbMsg.Cmd != WB_Wb &
 		Sta.Dir.ShrVld = false &
-		Sta.WbMsg.Cmd != WB_Wb&
-	forall NODE_1 : NODE do
-		Sta.ShWbMsg.Proc != NODE_1
-	end
+		Sta.Dir.Local = false
 ==>
  var NxtSta : STATE; 
 begin
@@ -1845,10 +1846,12 @@ rule "n_ABS_NI_Remote_GetX_PutX_Home_NODE_2"
 
 	Sta.HomeUniMsg.Cmd = UNI_GetX &
 	Sta.HomeUniMsg.Proc = Other
- 	& Sta.ShWbMsg.Cmd != SHWB_ShWb &
-		Sta.Dir.HeadVld = true &
-		Sta.Dir.ShrVld = false &
-		Sta.WbMsg.Cmd != WB_Wb&Sta.ShWbMsg.Proc != NODE_1
+ 	& Sta.Dir.Dirty = true &
+		Sta.WbMsg.Cmd != WB_Wb &
+		Sta.Dir.Local = false &
+		Sta.Dir.ShrVld = false&Sta.UniMsg[NODE_1].Cmd != UNI_PutX &
+		Sta.Dir.ShrSet[NODE_1] = false &
+		Sta.Proc[NODE_1].CacheState != CACHE_E
 ==>
  var NxtSta : STATE; 
 begin
@@ -1867,12 +1870,14 @@ rule "n_ABS_NI_Remote_GetX_PutX_Home_NODE_1_NODE_2"
 	Other != Other &
 	Sta.HomeUniMsg.Cmd = UNI_GetX &
 	Sta.HomeUniMsg.Proc = Other
- 	& Sta.ShWbMsg.Cmd != SHWB_ShWb &
-		Sta.Dir.HeadVld = true &
-		Sta.Dir.ShrVld = false &
-		Sta.WbMsg.Cmd != WB_Wb&
+ 	& Sta.Dir.Dirty = true &
+		Sta.WbMsg.Cmd != WB_Wb &
+		Sta.Dir.Local = false &
+		Sta.Dir.ShrVld = false&
 	forall NODE_1 : NODE do
-		Sta.ShWbMsg.Proc != NODE_1
+		Sta.UniMsg[NODE_1].Cmd != UNI_PutX &
+		Sta.Dir.ShrSet[NODE_1] = false &
+		Sta.Proc[NODE_1].CacheState != CACHE_E
 	end
 ==>
  var NxtSta : STATE; 
@@ -1894,17 +1899,17 @@ begin
 	Sta := NxtSta;
 endrule;
 rule "n_ABS_NI_Remote_PutX_NODE_1"
-Sta.Dir.Local = false &
+Sta.Dir.Dirty = true &
 		Sta.ShWbMsg.Cmd != SHWB_ShWb &
-		Sta.Dir.ShrVld = false &
 		Sta.Dir.HeadVld = true &
-		Sta.Dir.Dirty = true &
-		Sta.WbMsg.Cmd != WB_Wb&
+		Sta.WbMsg.Cmd != WB_Wb &
+		Sta.Dir.Local = false &
+		Sta.Dir.ShrVld = false&
 	forall NODE_2 : NODE do
 		Sta.Dir.ShrSet[NODE_2] = false &
+		Sta.ShWbMsg.Proc != NODE_2 &
 		Sta.Proc[NODE_2].CacheState != CACHE_E &
-		Sta.UniMsg[NODE_2].Cmd != UNI_PutX &
-		Sta.ShWbMsg.Proc != NODE_2
+		Sta.UniMsg[NODE_2].Cmd != UNI_PutX
 	end
 ==>
  var NxtSta : STATE; 
@@ -1969,7 +1974,163 @@ begin
 	Sta := NxtSta;
 endrule;
 
-ruleset i : NODE do
+ruleset i : NODE ; j : NODE do
 Invariant "rule_1"
+		(i != j) ->	(Sta.UniMsg[i].Cmd = UNI_PutX -> Sta.ShWbMsg.Proc != j);
+endruleset;
+
+
+ruleset i : NODE ; j : NODE do
+Invariant "rule_2"
+		(i != j) ->	(Sta.UniMsg[i].Cmd = UNI_PutX -> Sta.Proc[j].CacheState != CACHE_E);
+endruleset;
+
+
+ruleset j : NODE do
+Invariant "rule_3"
+	(Sta.Proc[j].CacheState = CACHE_E -> Sta.Dir.Dirty = true);
+endruleset;
+
+
+ruleset j : NODE do
+Invariant "rule_4"
+	(Sta.Proc[j].CacheState = CACHE_E -> Sta.Dir.Local = false);
+endruleset;
+
+
+ruleset i : NODE do
+Invariant "rule_5"
+	(Sta.Proc[i].CacheState = CACHE_E -> Sta.Dir.HeadVld = true);
+endruleset;
+
+
+ruleset i : NODE ; j : NODE do
+Invariant "rule_6"
+		(i != j) ->	(Sta.UniMsg[i].Cmd = UNI_PutX -> Sta.Dir.ShrSet[j] = false);
+endruleset;
+
+
+ruleset i : NODE do
+Invariant "rule_7"
+	(Sta.UniMsg[i].Cmd = UNI_PutX -> Sta.WbMsg.Cmd != WB_Wb);
+endruleset;
+
+
+ruleset i : NODE ; j : NODE do
+Invariant "rule_8"
+		(i != j) ->	(Sta.UniMsg[i].Cmd = UNI_PutX -> Sta.UniMsg[j].Cmd != UNI_PutX);
+endruleset;
+
+
+ruleset i : NODE do
+Invariant "rule_9"
+	(Sta.Proc[i].CacheState = CACHE_I -> Sta.ShWbMsg.Cmd != SHWB_ShWb);
+endruleset;
+
+
+ruleset j : NODE do
+Invariant "rule_10"
+	(Sta.Proc[j].CacheState = CACHE_E -> Sta.WbMsg.Cmd != WB_Wb);
+endruleset;
+
+
+ruleset j : NODE ; i : NODE do
+Invariant "rule_11"
+		(j != i) ->	(Sta.Proc[j].CacheState = CACHE_E -> Sta.UniMsg[i].Cmd != UNI_PutX);
+endruleset;
+
+
+ruleset i : NODE ; j : NODE do
+Invariant "rule_12"
+		(i != j) ->	(Sta.Proc[i].CacheState = CACHE_E -> Sta.ShWbMsg.Proc != j);
+endruleset;
+
+
+ruleset j : NODE do
+Invariant "rule_13"
+	(Sta.Proc[j].CacheState = CACHE_E -> Sta.Dir.ShrVld = false);
+endruleset;
+
+
+ruleset i : NODE do
+Invariant "rule_14"
+	(Sta.UniMsg[i].Cmd = UNI_PutX -> Sta.Dir.Local = false);
+endruleset;
+
+
+ruleset i : NODE do
+Invariant "rule_15"
+	(Sta.UniMsg[i].Cmd = UNI_GetX -> Sta.ShWbMsg.Cmd != SHWB_ShWb);
+endruleset;
+
+
+ruleset j : NODE ; i : NODE do
+Invariant "rule_16"
+		(j != i) ->	(Sta.Proc[j].CacheState = CACHE_E -> Sta.Proc[i].CacheState != CACHE_E);
+endruleset;
+
+
+ruleset i : NODE do
+Invariant "rule_17"
+	(Sta.UniMsg[i].Cmd = UNI_PutX -> Sta.Dir.Dirty = true);
+endruleset;
+
+
+ruleset i : NODE do
+Invariant "rule_18"
+	(Sta.UniMsg[i].Cmd = UNI_Get -> Sta.ShWbMsg.Cmd != SHWB_ShWb);
+endruleset;
+
+
+ruleset i : NODE do
+Invariant "rule_19"
+	(Sta.RpMsg[i].Cmd != RP_Replace -> Sta.ShWbMsg.Cmd != SHWB_ShWb);
+endruleset;
+
+
+ruleset i : NODE do
+Invariant "rule_20"
+	(Sta.UniMsg[i].Cmd = UNI_PutX -> Sta.Dir.ShrVld = false);
+endruleset;
+
+
+ruleset i : NODE do
+Invariant "rule_21"
 	(Sta.UniMsg[i].Cmd = UNI_PutX -> Sta.Dir.HeadVld = true);
+endruleset;
+
+
+ruleset i : NODE do
+Invariant "rule_22"
+	(Sta.Proc[i].CacheState = CACHE_E -> Sta.ShWbMsg.Cmd != SHWB_ShWb);
+endruleset;
+
+
+ruleset i : NODE do
+Invariant "rule_23"
+	(Sta.UniMsg[i].Cmd = UNI_PutX -> Sta.ShWbMsg.Cmd != SHWB_ShWb);
+endruleset;
+
+
+ruleset j : NODE do
+Invariant "rule_24"
+	(Sta.Proc[j].CacheState != CACHE_E -> Sta.ShWbMsg.Cmd != SHWB_ShWb);
+endruleset;
+
+
+ruleset i : NODE do
+Invariant "rule_25"
+	(Sta.Proc[i].ProcCmd = NODE_None -> Sta.ShWbMsg.Cmd != SHWB_ShWb);
+endruleset;
+
+
+ruleset i : NODE do
+Invariant "rule_26"
+	(Sta.Proc[i].ProcCmd = NODE_GetX -> Sta.ShWbMsg.Cmd != SHWB_ShWb);
+endruleset;
+
+
+ruleset j : NODE ; i : NODE do
+Invariant "rule_27"
+		(j != i) ->	(Sta.Proc[j].CacheState = CACHE_E -> Sta.Dir.ShrSet[i] = false);
 endruleset;
